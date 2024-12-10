@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
+import { HubConnectionBuilder } from '@microsoft/signalr';
 
 interface Point {
     id: number;
@@ -28,6 +29,23 @@ const TSPVisualizer = () => {
         };
 
         fetchRoute();
+    }, []);
+
+    useEffect(() => {
+        const connection = new HubConnectionBuilder()
+            .withUrl('http://localhost:5000/tspHub')
+            .build();
+
+        connection.on('ReceiveRouteUpdate', (updatedRoute: Route) => {
+            setRoute(updatedRoute);
+        });
+
+        connection.start()
+            .catch(err => console.error('SignalR Connection Error:', err));
+
+        return () => {
+            connection.stop();
+        };
     }, []);
 
     useEffect(() => {
