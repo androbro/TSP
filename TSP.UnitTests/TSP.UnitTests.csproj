@@ -20,4 +20,9 @@
         <Using Include="Xunit"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\TSP.Application\TSP.Application.csproj" />
+      <ProjectReference Include="..\TSP.Domain\TSP.Domain.csproj" />
+    </ItemGroup>
+
 </Project>
