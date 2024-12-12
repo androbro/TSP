@@ -1,5 +1,6 @@
 using TSP.Application.Interfaces;
 using TSP.Application.Services;
+using TSP.Application.UseCases.Map.Commands.CreateMap;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,8 +9,10 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+
 // custom services
 builder.Services.AddScoped<IRouteService, RouteService>();
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(CreateMapCommand).Assembly));
 
 //cors
 builder.Services.AddCors(options =>

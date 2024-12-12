@@ -2,6 +2,7 @@
 
 
 export interface PointDto {
+    id: string;
     x: number;
     y: number;
 }
