@@ -45,5 +45,12 @@ export const routeService = {
     },
 };
 
+export const mapService = {
+    generateMap: async (input: {gridSize: number, numberOfPoints: number}): Promise<PointDto[]> => {
+        const response = await api.post<PointDto[]>('/map/generate', input);
+        return response.data;
+    }
+};
+
 
 export default apiService;
