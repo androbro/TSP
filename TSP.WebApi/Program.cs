@@ -1,9 +1,17 @@
+using TSP.Application.Interfaces;
+using TSP.Application.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// custom services
+builder.Services.AddScoped<IRouteService, RouteService>();
+
+//cors
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend",

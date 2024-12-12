@@ -3,11 +3,9 @@
 namespace TSP.WebApi.controllers;
 
 [ApiController]
-[Route("TSP/[controller]")]
+[Route("api/[controller]")]
 public class StatusController: Controller
 {
-        public StatusController(){}
-        
         [HttpGet]
         public IActionResult Get()
         {

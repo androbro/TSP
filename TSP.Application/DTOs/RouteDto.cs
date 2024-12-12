@@ -8,7 +8,8 @@ public class RouteDto
     public ICollection<PointDto> Points { get; set; }
     public ICollection<ConnectionDto> Connections { get; set; }
     public double TotalDistance { get; set; }
-    public string Algorithm { get; set; } // We keep it as string for API responses
+    public string Algorithm { get; set; } 
+    public string CalculationTime { get; set; } 
 
     // Helper method to convert from domain enum
     public static string GetAlgorithmName(AlgorithmType type) => type.ToString();

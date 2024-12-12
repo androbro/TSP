@@ -10,6 +10,7 @@ public class Route
     public double TotalDistance { get; set; }
     public AlgorithmType  Algorithm { get; set; }
     public DateTime CreatedAt { get; set; }
+    public string CalculationTime { get; set; } 
     
     public bool IsValidAlgorithm()
     {
