@@ -23,7 +23,6 @@
     <ItemGroup>
       <ProjectReference Include="..\TSP.Infrastructure\TSP.Infrastructure.csproj" />
       <ProjectReference Include="..\TSP.Persistence\TSP.Persistence.csproj" />
-      <ProjectReference Include="..\TSP.WebApi\TSP.WebApi.csproj" />
     </ItemGroup>
 
 </Project>
