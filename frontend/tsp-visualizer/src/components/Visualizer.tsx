@@ -1,102 +1,48 @@
-import { useEffect, useRef, useState } from 'react';
-import axios from 'axios';
-import { HubConnectionBuilder } from '@microsoft/signalr';
+import { useEffect, useState } from 'react';
+import apiService from '../services/api';
 
-interface Point {
-    id: number;
-    x: number;
-    y: number;
-}
-
-interface Route {
-    points: Point[];
-    connections: [number, number][];
+interface StatusData {
+    status: string;
+    timestamp: string;
+    version: string;
+    environment: string;
 }
 
 const TSPVisualizer = () => {
-    const canvasRef = useRef<HTMLCanvasElement>(null);
-    const [route, setRoute] = useState<Route | null>(null);
+    const [apiData, setApiData] = useState<StatusData | null>(null);
+    const [error, setError] = useState<string>('');
 
     useEffect(() => {
-        // Example API call - replace with your actual endpoint
-        const fetchRoute = async () => {
+        const fetchStatus = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/api/tsp/route');
-                setRoute(response.data);
+                const data = await apiService.getStatus();
+                setApiData(data);
             } catch (error) {
-                console.error('Failed to fetch route:', error);
+                setError('Failed to fetch API status');
+                console.error('API Error:', error);
             }
         };
 
-        fetchRoute();
+        fetchStatus();
     }, []);
 
-    useEffect(() => {
-        const connection = new HubConnectionBuilder()
-            .withUrl('http://localhost:5000/tspHub')
-            .build();
-
-        connection.on('ReceiveRouteUpdate', (updatedRoute: Route) => {
-            setRoute(updatedRoute);
-        });
-
-        connection.start()
-            .catch(err => console.error('SignalR Connection Error:', err));
-
-        return () => {
-            connection.stop();
-        };
-    }, []);
-
-    useEffect(() => {
-        if (!canvasRef.current || !route) return;
-
-        const canvas = canvasRef.current;
-        const ctx = canvas.getContext('2d');
-        if (!ctx) return;
-
-        // Clear canvas
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        // Draw points
-        route.points.forEach(point => {
-            ctx.beginPath();
-            ctx.arc(point.x * canvas.width, point.y * canvas.height, 5, 0, 2 * Math.PI);
-            ctx.fillStyle = '#2563eb'; // blue-600
-            ctx.fill();
-            ctx.closePath();
-        });
-
-        // Draw connections
-        ctx.beginPath();
-        route.connections.forEach(([fromIdx, toIdx]) => {
-            const from = route.points[fromIdx];
-            const to = route.points[toIdx];
-            ctx.moveTo(from.x * canvas.width, from.y * canvas.height);
-            ctx.lineTo(to.x * canvas.width, to.y * canvas.height);
-        });
-        ctx.strokeStyle = '#dc2626'; // red-600
-        ctx.lineWidth = 2;
-        ctx.stroke();
-    }, [route]);
+    if (error) {
+        return <div className="text-red-600 p-4">{error}</div>;
+    }
 
     return (
-        <div className="flex flex-col items-center gap-4">
-            <h1 className="text-2xl font-bold text-gray-800">TSP Route Visualization</h1>
-            <canvas
-                ref={canvasRef}
-                width={600}
-                height={400}
-                className="border-2 border-gray-200 rounded-lg"
-            />
-            <div className="flex gap-2">
-                <button
-                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                    onClick={() => {/* Add refresh logic */}}
-                >
-                    Refresh Route
-                </button>
-            </div>
+        <div className="p-4">
+            <h1 className="text-2xl font-bold mb-4">TSP Route Visualization</h1>
+            {apiData ? (
+                <div className="border p-4 rounded">
+                    <p>Status: {apiData.status}</p>
+                    <p>Time: {apiData.timestamp}</p>
+                    <p>Version: {apiData.version}</p>
+                    <p>Environment: {apiData.environment}</p>
+                </div>
+            ) : (
+                <p>Loading...</p>
+            )}
         </div>
     );
 };

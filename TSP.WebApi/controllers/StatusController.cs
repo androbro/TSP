@@ -11,8 +11,15 @@ public class StatusController: Controller
         [HttpGet]
         public IActionResult Get()
         {
-            
-            return Ok();
+            var status = new
+            {
+                Status = "Operational",
+                Timestamp = DateTime.UtcNow,
+                Version = "1.0.0",
+                Environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development"
+            };
+        
+            return Ok(status);
         }
 
 }
