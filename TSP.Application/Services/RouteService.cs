@@ -1,21 +1,30 @@
 ﻿using TSP.Application.DTOs;
 using TSP.Application.Interfaces;
+using TSP.Application.Services.RouteOptimization.Common;
+using TSP.Application.Services.RouteOptimization.Interfaces;
 using TSP.Domain.Entities;
 
 namespace TSP.Application.Services;
 
 public class RouteService : IRouteService
-{
-    public async Task<RouteDto> CalculateRouteAsync(IEnumerable<PointDto> points)
+{  
+    private readonly IRouteStrategyFactory _strategyFactory;
+
+    public RouteService(IRouteStrategyFactory strategyFactory)
+    {
+        _strategyFactory = strategyFactory;
+    }
+    
+    public async Task<RouteDto> CalculateRouteAsync(IEnumerable<PointDto> points, OptimizationAlgorithm algorithm)
     {
         var startTime = DateTime.Now;
         
-        // Convert DTOs to domain entities
+        // Get the right strategy based on the algorithm
+        var strategy = _strategyFactory.GetStrategy(algorithm);
+        
         var routePoints = points.Select(p => new Point { X = p.X, Y = p.Y }).ToList();
-        
-        // Calculate optimal route using chosen algorithm (e.g., 2-opt)
-        var optimizedRoute = await OptimizeRoute(routePoints);
-        
+        var optimizedRoute = await strategy.OptimizeRoute(routePoints);
+
         // Calculate total distance
         double totalDistance = CalculateTotalDistance(optimizedRoute);
         
@@ -32,8 +41,12 @@ public class RouteService : IRouteService
 
     private async Task<List<Point>> OptimizeRoute(List<Point> points)
     {
-        // Implement your route optimization algorithm here (2-opt, nearest neighbor, etc.)
-        // This is where the core TSP logic would go
+        // 1. BRUTE FORCE
+        // 2. NEAREST NEIGHBOR
+        // 3. 2-OPT
+        // 4. SIMULATED ANNEALING
+        // 5. GENETIC ALGORITHM
+        // 6. LIN-KERNIGHAN
         throw new NotImplementedException();
     }
 

@@ -15,14 +15,13 @@ public class CreateRouteCommandHandler
     
     public async Task<RouteDto> Handle(CreateRouteCommand request, CancellationToken cancellationToken)
     {
-        // Validate command
         if (request.Points == null || request.Points.Length < 2)
         {
             throw new ValidationException("At least two points are required to create a route");
         }
 
-        // Call service to perform the calculation
-        var route = await _routeService.CalculateRouteAsync(request.Points);
+        // Pass both points and algorithm choice
+        var route = await _routeService.CalculateRouteAsync(request.Points, request.Algorithm);
 
         return route;
     }

@@ -20,7 +20,7 @@ public class RouteController: Controller
     [HttpGet("calculate")]
     public async Task<ActionResult<RouteDto>> CalculateRoute([FromBody] CreateRouteCommand command)
     {
-        var points = await _mediator.Send(command);
-        return Ok(points);
+        var route = await _mediator.Send(command);
+        return Ok(route);
     }
 }

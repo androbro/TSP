@@ -1,5 +1,7 @@
 using TSP.Application.Interfaces;
 using TSP.Application.Services;
+using TSP.Application.Services.RouteOptimization.Interfaces;
+using TSP.Application.Services.RouteOptimization.Strategies;
 using TSP.Application.UseCases.Map.Commands.CreateMap;
 using TSP.Application.UseCases.Route.Command.CreateRoute;
 
@@ -13,6 +15,8 @@ builder.Services.AddSwaggerGen();
 
 // custom services
 builder.Services.AddScoped<IRouteService, RouteService>();
+builder.Services.AddScoped<IRouteOptimizationStrategy, NearestNeighborStrategy>();
+
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(CreateMapCommand).Assembly));
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(CreateRouteCommand).Assembly));
 
