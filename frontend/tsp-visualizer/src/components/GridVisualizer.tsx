@@ -1,5 +1,6 @@
 ﻿import { useEffect, useRef, useState } from 'react';
 import { mapService, PointDto } from '../services/api';
+import { Tooltip } from 'react-tooltip'
 
 const GridVisualizer = () => {
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -98,6 +99,17 @@ const GridVisualizer = () => {
 
     return (
         <div className="p-4 space-y-4">
+            <Tooltip id="my-tooltip" />
+            <a
+                data-tooltip-id="my-tooltip"
+                data-tooltip-content="Hello world!"
+                data-tooltip-place="top"
+            >
+                ◕‿‿◕
+            </a>
+            <a data-tooltip-id="my-tooltip" data-tooltip-content="Hello to you too!">
+                ◕‿‿◕
+            </a>
             <div className="flex gap-4 items-end">
                 <div className="space-y-2">
                     <label className="block text-sm font-medium text-gray-700">
