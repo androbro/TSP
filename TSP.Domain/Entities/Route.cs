@@ -8,12 +8,12 @@ public class Route
     public List<Point> Points { get; set; } = [];
     public List<(int FromIndex, int ToIndex)> Connections { get; set; } = [];
     public double TotalDistance { get; set; }
-    public AlgorithmType  Algorithm { get; set; }
+    public OptimizationAlgorithm  Algorithm { get; set; }
     public DateTime CreatedAt { get; set; }
     public string CalculationTime { get; set; } 
     
     public bool IsValidAlgorithm()
     {
-        return Enum.IsDefined(typeof(AlgorithmType), Algorithm);
+        return Enum.IsDefined(typeof(OptimizationAlgorithm), Algorithm);
     }
 }

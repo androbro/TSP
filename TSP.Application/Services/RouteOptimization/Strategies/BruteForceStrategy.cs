@@ -1,6 +1,6 @@
-using TSP.Application.Services.RouteOptimization.Common;
 using TSP.Application.Services.RouteOptimization.Interfaces;
 using TSP.Domain.Entities;
+using TSP.Domain.Enums;
 
 namespace TSP.Application.Services.RouteOptimization.Strategies;
 

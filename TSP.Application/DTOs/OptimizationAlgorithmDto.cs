@@ -1,6 +1,6 @@
-namespace TSP.Application.Services.RouteOptimization.Common;
+namespace TSP.Application.DTOs;
 
-public enum OptimizationAlgorithm
+public enum OptimizationAlgorithmDto
 {
     BruteForce,
     NearestNeighbor,

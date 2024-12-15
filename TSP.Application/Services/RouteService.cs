@@ -1,6 +1,5 @@
 ﻿using TSP.Application.DTOs;
 using TSP.Application.Interfaces;
-using TSP.Application.Services.RouteOptimization.Common;
 using TSP.Application.Services.RouteOptimization.Interfaces;
 using TSP.Domain.Entities;
 
@@ -15,7 +14,7 @@ public class RouteService : IRouteService
         _strategyFactory = strategyFactory;
     }
     
-    public async Task<RouteDto> CalculateRouteAsync(IEnumerable<PointDto> points, OptimizationAlgorithm algorithm)
+    public async Task<RouteDto> CalculateRouteAsync(IEnumerable<PointDto> points, OptimizationAlgorithmDto algorithm)
     {
         var startTime = DateTime.Now;
         

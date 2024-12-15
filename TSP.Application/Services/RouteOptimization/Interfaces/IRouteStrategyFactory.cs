@@ -1,8 +1,8 @@
-using TSP.Application.Services.RouteOptimization.Common;
+using TSP.Application.DTOs;
 
 namespace TSP.Application.Services.RouteOptimization.Interfaces;
 
 public interface IRouteStrategyFactory
 {
-    IRouteOptimizationStrategy GetStrategy(OptimizationAlgorithm algorithm);
+    IRouteOptimizationStrategy GetStrategy(OptimizationAlgorithmDto algorithm);
 }

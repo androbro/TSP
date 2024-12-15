@@ -1,4 +1,4 @@
-using TSP.Application.Services.RouteOptimization.Common;
+using TSP.Domain.Enums;
 using TSP.Application.Services.RouteOptimization.Interfaces;
 using TSP.Domain.Entities;
 

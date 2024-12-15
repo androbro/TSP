@@ -1,3 +1,4 @@
+using TSP.Application.DTOs;
 using TSP.Application.Services.RouteOptimization.Interfaces;
 using TSP.Application.Services.RouteOptimization.Strategies;
 
@@ -12,16 +13,16 @@ public class RouteStrategyFactory : IRouteStrategyFactory
         _serviceProvider = serviceProvider;
     }
 
-    public IRouteOptimizationStrategy GetStrategy(OptimizationAlgorithm algorithm)
+    public IRouteOptimizationStrategy GetStrategy(OptimizationAlgorithmDto algorithm)
     {
         return algorithm switch
         {
-            OptimizationAlgorithm.BruteForce => new BruteForceStrategy(),
-            OptimizationAlgorithm.NearestNeighbor => new NearestNeighborStrategy(),
-            OptimizationAlgorithm.GeneticAlgorithm => new GeneticAlgorithmStrategy(),
-            OptimizationAlgorithm.LinKernighan => new LinKernighanStrategy(),
-            OptimizationAlgorithm.SimulatedAnnealing => new SimulatedAnnealingStrategy(),
-            OptimizationAlgorithm.TwoOpt => new TwoOptStrategy(),
+            OptimizationAlgorithmDto.BruteForce => new BruteForceStrategy(),
+            OptimizationAlgorithmDto.NearestNeighbor => new NearestNeighborStrategy(),
+            OptimizationAlgorithmDto.GeneticAlgorithm => new GeneticAlgorithmStrategy(),
+            OptimizationAlgorithmDto.LinKernighan => new LinKernighanStrategy(),
+            OptimizationAlgorithmDto.SimulatedAnnealing => new SimulatedAnnealingStrategy(),
+            OptimizationAlgorithmDto.TwoOpt => new TwoOptStrategy(),
             _ => throw new ArgumentException($"Unsupported algorithm: {algorithm}")
         };
     }
