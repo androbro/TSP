@@ -6,9 +6,10 @@ namespace TSP.Application.Services.RouteOptimization.Strategies;
 
 public class LinKernighanStrategy: IRouteOptimizationStrategy
 {
-    public string AlgorithmName => OptimizationAlgorithm.LinKernighan.ToString();
+    public string algorithmName => OptimizationAlgorithm.LinKernighan.ToString();
+    public Route? route { get; set; }
 
-    public async Task<List<Point>> OptimizeRoute(List<Point> points)
+    public async Task<Route> OptimizeRoute(List<Point> points)
     {
         // Implementation here
         throw new NotImplementedException();

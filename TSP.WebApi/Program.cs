@@ -1,5 +1,6 @@
 using TSP.Application.Interfaces;
 using TSP.Application.Services;
+using TSP.Application.Services.RouteOptimization.Common;
 using TSP.Application.Services.RouteOptimization.Interfaces;
 using TSP.Application.Services.RouteOptimization.Strategies;
 using TSP.Application.UseCases.Map.Commands.CreateMap;
@@ -12,13 +13,23 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Register MediatR handlers
+builder.Services.AddMediatR(cfg => {
+    cfg.RegisterServicesFromAssembly(typeof(CreateRouteCommand).Assembly);
+    cfg.RegisterServicesFromAssembly(typeof(CreateRouteCommandHandler).Assembly);
+});
 
 // custom services
 builder.Services.AddScoped<IRouteService, RouteService>();
-builder.Services.AddScoped<IRouteOptimizationStrategy, NearestNeighborStrategy>();
+builder.Services.AddScoped<IRouteStrategyFactory, RouteStrategyFactory>();
 
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(CreateMapCommand).Assembly));
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(CreateRouteCommand).Assembly));
+// Register optimization strategies
+builder.Services.AddScoped<IRouteOptimizationStrategy, NearestNeighborStrategy>();
+builder.Services.AddScoped<IRouteOptimizationStrategy, TwoOptStrategy>();
+builder.Services.AddScoped<IRouteOptimizationStrategy, SimulatedAnnealingStrategy>();
+builder.Services.AddScoped<IRouteOptimizationStrategy, GeneticAlgorithmStrategy>();
+builder.Services.AddScoped<IRouteOptimizationStrategy, LinKernighanStrategy>();
+builder.Services.AddScoped<IRouteOptimizationStrategy, BruteForceStrategy>();
 
 //cors
 builder.Services.AddCors(options =>

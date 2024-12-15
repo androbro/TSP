@@ -1,10 +1,11 @@
 using System.ComponentModel.DataAnnotations;
+using MediatR;
 using TSP.Application.DTOs;
 using TSP.Application.Interfaces;
 
 namespace TSP.Application.UseCases.Route.Command.CreateRoute;
 
-public class CreateRouteCommandHandler
+public class CreateRouteCommandHandler : IRequestHandler<CreateRouteCommand, RouteDto>
 {
     private readonly IRouteService _routeService;
 

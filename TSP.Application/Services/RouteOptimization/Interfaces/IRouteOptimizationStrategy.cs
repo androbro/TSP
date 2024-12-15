@@ -5,6 +5,7 @@ namespace TSP.Application.Services.RouteOptimization.Interfaces;
 
 public interface IRouteOptimizationStrategy
 {
-    Task<List<Point>> OptimizeRoute(List<Point> points);
-    string AlgorithmName { get; }
+    Task<Route> OptimizeRoute(List<Point> points);
+    string algorithmName { get; }
+    Route? route { get; set; }
 }

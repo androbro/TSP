@@ -32,7 +32,7 @@ public class RouteService : IRouteService
         // Map back to DTO
         return new RouteDto
         {
-            Points = optimizedRoute.Select(p => new PointDto { X = p.X, Y = p.Y }).ToList(),
+            Points = optimizedRoute.Points.Select(p => new PointDto { X = p.X, Y = p.Y }).ToList(),
             TotalDistance = Math.Round(totalDistance, 2),
             CalculationTime = $"{calculationTime:F1} seconds"
         };
@@ -49,13 +49,13 @@ public class RouteService : IRouteService
         throw new NotImplementedException();
     }
 
-    private double CalculateTotalDistance(List<Point> points)
+    private static double CalculateTotalDistance(Route route)
     {
         double totalDistance = 0;
-        for (int i = 0; i < points.Count - 1; i++)
+        for (int i = 0; i < route.Points.Count - 1; i++)
         {
-            var p1 = points[i];
-            var p2 = points[i + 1];
+            var p1 = route.Points[i];
+            var p2 = route.Points[i + 1];
             totalDistance += Math.Sqrt(Math.Pow(p2.X - p1.X, 2) + Math.Pow(p2.Y - p1.Y, 2));
         }
         return totalDistance;

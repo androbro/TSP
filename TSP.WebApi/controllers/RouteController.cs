@@ -17,7 +17,7 @@ public class RouteController: Controller
         _mediator = mediator;
     }
 
-    [HttpGet("calculate")]
+    [HttpPost("calculate")]
     public async Task<ActionResult<RouteDto>> CalculateRoute([FromBody] CreateRouteCommand command)
     {
         var route = await _mediator.Send(command);

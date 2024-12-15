@@ -6,9 +6,10 @@ namespace TSP.Application.Services.RouteOptimization.Strategies;
 
 public class TwoOptStrategy: IRouteOptimizationStrategy
 {
-    public string AlgorithmName => OptimizationAlgorithm.TwoOpt.ToString();
+    public string algorithmName => OptimizationAlgorithm.TwoOpt.ToString();
+    public Route? route { get; set; }
 
-    public async Task<List<Point>> OptimizeRoute(List<Point> points)
+    public async Task<Route> OptimizeRoute(List<Point> points)
     {
         // Implementation here
         throw new NotImplementedException();

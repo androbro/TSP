@@ -6,9 +6,10 @@ namespace TSP.Application.Services.RouteOptimization.Strategies;
 
 public class NearestNeighborStrategy : IRouteOptimizationStrategy
 {
-    public string AlgorithmName => OptimizationAlgorithmDto.NearestNeighbor.ToString();
-
-    public async Task<List<Point>> OptimizeRoute(List<Point> points)
+    public string algorithmName => OptimizationAlgorithmDto.NearestNeighbor.ToString();
+    public Route? route { get; set; }
+    
+    public async Task<Route> OptimizeRoute(List<Point> points)
     {
         // Implementation here
         throw new NotImplementedException();

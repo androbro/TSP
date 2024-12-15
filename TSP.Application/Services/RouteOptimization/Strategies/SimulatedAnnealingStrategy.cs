@@ -6,9 +6,10 @@ namespace TSP.Application.Services.RouteOptimization.Strategies;
 
 public class SimulatedAnnealingStrategy: IRouteOptimizationStrategy
 {
-    public string AlgorithmName => OptimizationAlgorithm.SimulatedAnnealing.ToString();
-
-    public async Task<List<Point>> OptimizeRoute(List<Point> points)
+    public string algorithmName => OptimizationAlgorithm.SimulatedAnnealing.ToString();
+    public Route? route { get; set; }
+    
+    public async Task<Route> OptimizeRoute(List<Point> points)
     {
         // Implementation here
         throw new NotImplementedException();

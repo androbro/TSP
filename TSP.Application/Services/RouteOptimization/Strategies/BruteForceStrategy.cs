@@ -6,11 +6,15 @@ namespace TSP.Application.Services.RouteOptimization.Strategies;
 
 public class BruteForceStrategy: IRouteOptimizationStrategy
 {
-    public string AlgorithmName => OptimizationAlgorithm.BruteForce.ToString();
-
-    public async Task<List<Point>> OptimizeRoute(List<Point> points)
+    public string algorithmName => OptimizationAlgorithm.BruteForce.ToString();
+    public Route? route { get; set; }
+    
+    public async Task<Route> OptimizeRoute(List<Point> points)
     {
-        // Implementation here
-        throw new NotImplementedException();
+        //return a basic response so i know the method is being called
+        return new Route
+        {
+            Points = points
+        };
     }
 }
