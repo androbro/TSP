@@ -1,8 +1,6 @@
-using TSP.Domain.Entities;
+namespace TSP.Domain.Entities;
 
-namespace TSP.Application.DTOs;
-
-public class ConnectionDto
+public class Connection
 {
     public Point FromPoint { get; set; }  // Index of starting point
     public Point ToPoint { get; set; }    // Index of ending point

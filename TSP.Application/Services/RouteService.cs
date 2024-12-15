@@ -23,18 +23,23 @@ public class RouteService : IRouteService
         
         var routePoints = points.Select(p => new Point { X = p.X, Y = p.Y }).ToList();
         var optimizedRoute = await strategy.OptimizeRoute(routePoints);
-
-        // Calculate total distance
-        double totalDistance = CalculateTotalDistance(optimizedRoute);
         
         var calculationTime = (DateTime.Now - startTime).TotalSeconds;
 
         // Map back to DTO
         return new RouteDto
         {
-            Points = optimizedRoute.Points.Select(p => new PointDto { X = p.X, Y = p.Y }).ToList(),
-            TotalDistance = Math.Round(totalDistance, 2),
-            CalculationTime = $"{calculationTime:F1} seconds"
+            Points = optimizedRoute.Points.Select(p => new PointDto { X = p.X, Y = p.Y, Id = p.Id}).ToList(),
+            TotalDistance = optimizedRoute.TotalDistance,
+            CalculationTime = $"{calculationTime:F1} seconds",
+            Connections = optimizedRoute.Connections
+                .Select(c => new ConnectionDto { 
+                    IsOptimal = c.IsOptimal, 
+                    Distance = c.Distance, 
+                    FromPoint = c.FromPoint, 
+                    ToPoint = c.ToPoint
+                })
+                .ToList() 
         };
     }
 
@@ -47,17 +52,5 @@ public class RouteService : IRouteService
         // 5. GENETIC ALGORITHM
         // 6. LIN-KERNIGHAN
         throw new NotImplementedException();
-    }
-
-    private static double CalculateTotalDistance(Route route)
-    {
-        double totalDistance = 0;
-        for (int i = 0; i < route.Points.Count - 1; i++)
-        {
-            var p1 = route.Points[i];
-            var p2 = route.Points[i + 1];
-            totalDistance += Math.Sqrt(Math.Pow(p2.X - p1.X, 2) + Math.Pow(p2.Y - p1.Y, 2));
-        }
-        return totalDistance;
     }
 }
