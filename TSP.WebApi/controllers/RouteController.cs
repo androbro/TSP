@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using MediatR;
+using Microsoft.AspNetCore.Mvc;
 using TSP.Application.DTOs;
 using TSP.Application.Interfaces;
+using TSP.Application.UseCases.Route.Command.CreateRoute;
 
 namespace TSP.WebApi.controllers;
 
@@ -8,17 +10,17 @@ namespace TSP.WebApi.controllers;
 [Route("api/[controller]")]
 public class RouteController: Controller
 {
-    private readonly IRouteService _routeService;
+    private readonly IMediator _mediator;
 
-    public RouteController(IRouteService routeService)
+    public RouteController(IMediator mediator)
     {
-        _routeService = routeService;
+        _mediator = mediator;
     }
 
     [HttpGet("calculate")]
-    public async Task<ActionResult<RouteDto>> CalculateRoute()
+    public async Task<ActionResult<RouteDto>> CalculateRoute([FromBody] CreateRouteCommand command)
     {
-        var result = await _routeService.CalculateSimpleRouteAsync();
-        return Ok(result);
+        var points = await _mediator.Send(command);
+        return Ok(points);
     }
 }
