@@ -1,87 +1,105 @@
 using TSP.Application.Services.RouteOptimization.Interfaces;
 using TSP.Domain.Entities;
+using TSP.Domain.Enums;
 
 namespace TSP.Application.Services.RouteOptimization.Strategies;
 
 public class BruteForceStrategy : IRouteOptimizationStrategy
 {
-    public string algorithmName { get; }
+    public string algorithmName { get; } = "Brute Force";
     public Route? route { get; set; }
     
     public Route OptimizeRoute(List<Point> points)
     {
-        //example: [a,b,c]
-        //route: [a-b-c], [a-c-b], [b-a-c]
+        if (points.Count <= 1)
+            throw new ArgumentException("Need at least 2 points for route optimization");
+
+        var startTime = DateTime.Now;
+        var startPoint = points[0];  // Keep track of start point
+        var pointsToPermute = points.Skip(1).ToList();  // Permute all except start
         
-        //lus: elk punt moet 2 connecties hebben 
-        //lus: elk punt mag maar 1 keer voorkomen in de lus
-        //lus: lus moet uniek zijn in connecties
-
-        Dictionary<List<Point>, double> routeDistances = new();
-
-        foreach (var route in GeneratePermutations(points))
+        List<Route> possibleRoutes = new();
+        foreach (var permutation in GeneratePermutations(pointsToPermute))
         {
-            List<Connection> connections = [];
-            for (int i = 0; i < route.Count; i++)
+            // Add start point to beginning and end to complete the circuit
+            var fullRoute = new List<Point> { startPoint };
+            fullRoute.AddRange(permutation);
+            fullRoute.Add(startPoint);
+            
+            // Create route and calculate its total distance
+            var route = new Route(fullRoute, OptimizationAlgorithm.BruteForce)
             {
-                if (i == route.Count - 1)
-                {
-                    var lastConnection = new Connection(route[i], route[0]);
-                    connections.Add(lastConnection);
-                    break;
-                }
-//wayfunction collapse
-                var start = route[i];
-                var end = route[i + 1];
-                var connection = new Connection(start, end);
-
-                connections.Add(connection);
-            }
-            routeDistances.Add(route, connections.Sum(x => x.Distance));
+                Connections = CreateConnections(fullRoute),
+                TotalDistance = CalculateTotalDistance(fullRoute),
+                CalculationTime = (DateTime.Now - startTime).ToString()
+            };
+            
+            possibleRoutes.Add(route);
         }
 
-        var bestRoute = routeDistances.OrderBy(x => x.Value).First().Key;
-
-        return new Route(bestRoute);
-    }
-    
-
-    private IEnumerable<List<Point>> GeneratePermutations(List<Point> points)
-    {
-        // Base case: if there is only one point or no points, return the list as is
-        if (points.Count <= 1)
+        // Find the route with minimum total distance
+        var optimalRoute = possibleRoutes.MinBy(r => r.TotalDistance) 
+            ?? throw new InvalidOperationException("Failed to find optimal route");
+            
+        // Mark connections as optimal
+        foreach (var connection in optimalRoute.Connections)
         {
-            yield return points;
+            connection.IsOptimal = true;
+        }
+
+        return optimalRoute;
+    }
+
+    private static List<Connection> CreateConnections(List<Point> points)
+    {
+        var connections = new List<Connection>();
+        for (int i = 0; i < points.Count - 1; i++)
+        {
+            connections.Add(new Connection
+            {
+                FromPoint = points[i],
+                ToPoint = points[i + 1],
+                Distance = CalculateDistance(points[i], points[i + 1])
+            });
+        }
+        return connections;
+    }
+
+    private static double CalculateTotalDistance(List<Point> points)
+    {
+        double totalDistance = 0;
+        for (int i = 0; i < points.Count - 1; i++)
+        {
+            totalDistance += CalculateDistance(points[i], points[i + 1]);
+        }
+        return totalDistance;
+    }
+
+    private static double CalculateDistance(Point p1, Point p2)
+    {
+        var dx = p2.X - p1.X;
+        var dy = p2.Y - p1.Y;
+        return Math.Sqrt(dx * dx + dy * dy);
+    }
+
+    private static IEnumerable<List<T>> GeneratePermutations<T>(List<T> items)
+    {
+        if (items.Count <= 1)
+        {
+            yield return new List<T>(items);
             yield break;
         }
 
-        // Take the first point
-        var firstPoint = points[0];
-        // Get the remaining points
-        var remainingPoints = points.Skip(1).ToList();
-
-        // Recursively generate all permutations of the remaining points
-        foreach (var permutation in GeneratePermutations(remainingPoints))
+        for (int i = 0; i < items.Count; i++)
         {
-            // Insert the first point into every possible position of each permutation
-            for (var i = 0; i <= permutation.Count; i++)
+            var current = items[i];
+            var remainingItems = items.Take(i).Concat(items.Skip(i + 1)).ToList();
+
+            foreach (var permutation in GeneratePermutations(remainingItems))
             {
-                var newRoute = new List<Point>(permutation);
-                newRoute.Insert(i, firstPoint);
-                yield return newRoute;
+                permutation.Insert(0, current);
+                yield return permutation;
             }
         }
-    }
-}
-
-
-record Connection(Point From, Point To)
-{
-    private double? _distance;
-    public double Distance => _distance ??= CalculateDistance();
-    
-    private double CalculateDistance()
-    {
-        return Math.Sqrt(Math.Pow(From.X - To.X, 2) + Math.Pow(From.Y - To.Y, 2));
     }
 }
