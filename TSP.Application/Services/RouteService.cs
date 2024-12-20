@@ -33,7 +33,7 @@ public class RouteService : IRouteService
         {
             Points = optimizedRoute.Points.Select(p => new PointDto { X = p.X, Y = p.Y, Id = p.Id}).ToList(),
             TotalDistance = optimizedRoute.TotalDistance,
-            CalculationTime = $"{calculationTime:F1} seconds",
+            CalculationTime = $"{calculationTime} ms",
             Connections = optimizedRoute.Connections
                 .Select(c => new ConnectionDto { 
                     IsOptimal = c.IsOptimal, 

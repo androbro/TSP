@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using TSP.Application.Services.RouteOptimization.Interfaces;
 using TSP.Domain.Entities;
 using TSP.Domain.Enums;
@@ -14,7 +15,8 @@ public class BruteForceStrategy : IRouteOptimizationStrategy
         if (points.Count <= 1)
             throw new ArgumentException("Need at least 2 points for route optimization");
 
-        var startTime = DateTime.Now;
+        Stopwatch stopwatch = new();
+        stopwatch.Start();
         var startPoint = points[0];  // Keep track of start point
         var pointsToPermute = points.Skip(1).ToList();  // Permute all except start
         
@@ -31,7 +33,7 @@ public class BruteForceStrategy : IRouteOptimizationStrategy
             {
                 Connections = CreateConnections(fullRoute),
                 TotalDistance = CalculateTotalDistance(fullRoute),
-                CalculationTime = (DateTime.Now - startTime).ToString()
+                CalculationTime = stopwatch.ElapsedMilliseconds.ToString()
             };
             
             possibleRoutes.Add(route);
