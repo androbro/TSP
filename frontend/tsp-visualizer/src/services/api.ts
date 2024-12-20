@@ -1,15 +1,24 @@
 ﻿import axios from 'axios';
 
-
 export interface PointDto {
     id: string;
     x: number;
     y: number;
 }
 
+export interface ConnectionDto {
+    fromPoint: PointDto;
+    toPoint: PointDto;
+    distance: number;
+    isOptimal: boolean;
+}
+
 export interface RouteDto {
+    id: number;
     points: PointDto[];
+    connections: ConnectionDto[];
     totalDistance: number;
+    algorithmDto: number;
     calculationTime: string;
 }
 
@@ -39,18 +48,17 @@ export const apiService = {
 };
 
 export const routeService = {
-    calculateRoute: async (input: {algorithm: number, points: PointDto[]}): Promise<RouteDto> => {
+    calculateRoute: async (input: { algorithm: number, points: PointDto[] }): Promise<RouteDto> => {
         const response = await api.post<RouteDto>('/route/calculate', input);
         return response.data;
     },
 };
 
 export const mapService = {
-    generateMap: async (input: {gridSize: number, numberOfPoints: number}): Promise<PointDto[]> => {
+    generateMap: async (input: { gridSize: number, numberOfPoints: number }): Promise<PointDto[]> => {
         const response = await api.post<PointDto[]>('/map/generate', input);
         return response.data;
     }
 };
-
 
 export default apiService;

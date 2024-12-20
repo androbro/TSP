@@ -1,5 +1,5 @@
 ﻿import { useState } from 'react';
-import {PointDto, RouteDto, routeService} from "../services/api.ts";
+import { PointDto, RouteDto, routeService } from '../services/api';
 
 export const useRouteCalculation = () => {
     const [route, setRoute] = useState<RouteDto | null>(null);

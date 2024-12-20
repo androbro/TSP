@@ -1,4 +1,4 @@
-﻿import { PointDto } from '../services/api';
+﻿import {ConnectionDto, PointDto} from '../services/api';
 
 export const drawGrid = (
     ctx: CanvasRenderingContext2D,
@@ -32,6 +32,25 @@ export const drawGrid = (
             }
         }
     }
+};
+
+export const drawConnections = (ctx: CanvasRenderingContext2D, connections: ConnectionDto[]) => {
+    connections.forEach(connection => {
+        ctx.beginPath();
+        ctx.moveTo(connection.fromPoint.x, connection.fromPoint.y);
+        ctx.lineTo(connection.toPoint.x, connection.toPoint.y);
+
+        // Style based on whether the connection is optimal
+        if (connection.isOptimal) {
+            ctx.strokeStyle = '#10b981'; // Green for optimal connections
+            ctx.lineWidth = 2;
+        } else {
+            ctx.strokeStyle = '#6b7280'; // Gray for non-optimal connections
+            ctx.lineWidth = 1;
+        }
+
+        ctx.stroke();
+    });
 };
 
 export const drawPoints = (ctx: CanvasRenderingContext2D, points: PointDto[]) => {

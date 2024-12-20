@@ -16,7 +16,7 @@ const GridVisualizer = () => {
 
     const { route, error, loading: routeLoading, calculateRoute } = useRouteCalculation();
 
-    useCanvas(canvasRef, points, gridSize);
+    useCanvas(canvasRef, points, gridSize, route);
 
     const generatePoints = async () => {
         try {
