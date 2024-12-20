@@ -39,8 +39,8 @@ export const apiService = {
 };
 
 export const routeService = {
-    calculateRoute: async (): Promise<RouteDto> => {
-        const response = await api.get<RouteDto>('/route/calculate');
+    calculateRoute: async (input: {algorithm: number, points: PointDto[]}): Promise<RouteDto> => {
+        const response = await api.post<RouteDto>('/route/calculate', input);
         return response.data;
     },
 };

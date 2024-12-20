@@ -16,13 +16,15 @@ public class RouteService : IRouteService
     
     public async Task<RouteDto> CalculateRouteAsync(IEnumerable<PointDto> points, OptimizationAlgorithmDto algorithm)
     {
+        // mss beter timeonly? 
+        // maar er zijn ook timers in c# die je kan gebruiken die .elapsed hebben. stopwatch
         var startTime = DateTime.Now;
         
         // Get the right strategy based on the algorithm
         var strategy = _strategyFactory.GetStrategy(algorithm);
         
-        var routePoints = points.Select(p => new Point { X = p.X, Y = p.Y }).ToList();
-        var optimizedRoute = await strategy.OptimizeRoute(routePoints);
+        var routePoints = points.Select(p => new Point(p.X, p.Y)).ToList();
+        var optimizedRoute = strategy.OptimizeRoute(routePoints);
         
         var calculationTime = (DateTime.Now - startTime).TotalSeconds;
 

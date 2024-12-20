@@ -6,6 +6,7 @@ namespace TSP.Application.Services.RouteOptimization.Common;
 
 public class RouteStrategyFactory : IRouteStrategyFactory
 {
+    //Ienmerable<IRouteOptimizationStrategy> _strategies;
     private readonly IServiceProvider _serviceProvider;
 
     public RouteStrategyFactory(IServiceProvider serviceProvider)

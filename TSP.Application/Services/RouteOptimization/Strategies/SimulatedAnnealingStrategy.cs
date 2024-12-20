@@ -9,7 +9,7 @@ public class SimulatedAnnealingStrategy: IRouteOptimizationStrategy
     public string algorithmName => OptimizationAlgorithm.SimulatedAnnealing.ToString();
     public Route? route { get; set; }
     
-    public async Task<Route> OptimizeRoute(List<Point> points)
+    public Route OptimizeRoute(List<Point> points)
     {
         // Implementation here
         throw new NotImplementedException();

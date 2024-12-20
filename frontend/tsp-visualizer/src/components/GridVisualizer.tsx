@@ -1,5 +1,5 @@
 ﻿import { useEffect, useRef, useState } from 'react';
-import { mapService, PointDto } from '../services/api';
+import {mapService, PointDto, RouteDto, routeService} from '../services/api';
 
 const GridVisualizer = () => {
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -7,6 +7,8 @@ const GridVisualizer = () => {
     const [gridSize, setGridSize] = useState(1000);
     const [numPoints, setNumPoints] = useState(12);
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [route, setRoute] = useState<RouteDto | null>(null);
 
     const GRID_SIZE_OPTIONS = [
         { value: 500, label: '750 x 750' },
@@ -73,6 +75,25 @@ const GridVisualizer = () => {
         }
     };
 
+    const calculateRoute = async () => {
+        try {
+            setLoading(true);
+            setError(null);
+            const pointDtoList: PointDto[] = points.map((point) => ({
+                id: point.id,
+                x: point.x,
+                y: point.y
+            }));
+            const result = await routeService.calculateRoute({points: pointDtoList, algorithm:0});
+            setRoute(result);
+        } catch (err) {
+            setError('Failed to calculate route');
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
         const canvas = canvasRef.current;
         if (!canvas) return;
@@ -122,6 +143,39 @@ const GridVisualizer = () => {
                 >
                     {loading ? 'Generating...' : 'Generate Points'}
                 </button>
+            </div>
+            <div className="p-4">
+                <button
+                    onClick={calculateRoute}
+                    disabled={loading}
+                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:opacity-50"
+                >
+                    {loading ? 'Calculating...' : 'Calculate Route'}
+                </button>
+
+                {error && (
+                    <div className="mt-4 text-red-500">
+                        {error}
+                    </div>
+                )}
+
+                {route && (
+                    <div className="mt-4">
+                        <h2 className="text-xl font-bold mb-2">Route Details</h2>
+                        <div className="space-y-2">
+                            <p>Total Distance: {route.totalDistance}</p>
+                            <p>Calculation Time: {route.calculationTime}</p>
+                            <h3 className="font-bold">Points:</h3>
+                            <ul className="list-disc pl-5">
+                                {route.points.map((point, index) => (
+                                    <li key={index}>
+                                        ({point.x}, {point.y})
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    </div>
+                )}
             </div>
 
             <canvas

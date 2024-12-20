@@ -9,7 +9,7 @@ public class TwoOptStrategy: IRouteOptimizationStrategy
     public string algorithmName => OptimizationAlgorithm.TwoOpt.ToString();
     public Route? route { get; set; }
 
-    public async Task<Route> OptimizeRoute(List<Point> points)
+    public Route OptimizeRoute(List<Point> points)
     {
         // Implementation here
         throw new NotImplementedException();

@@ -23,6 +23,7 @@ builder.Services.AddMediatR(cfg => {
 builder.Services.AddScoped<IRouteService, RouteService>();
 builder.Services.AddScoped<IRouteStrategyFactory, RouteStrategyFactory>();
 
+//hier gaat alleen de laatste strategy werken
 // Register optimization strategies
 builder.Services.AddScoped<IRouteOptimizationStrategy, NearestNeighborStrategy>();
 builder.Services.AddScoped<IRouteOptimizationStrategy, TwoOptStrategy>();
