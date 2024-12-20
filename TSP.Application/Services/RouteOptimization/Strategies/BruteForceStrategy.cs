@@ -12,69 +12,99 @@ public class BruteForceStrategy : IRouteOptimizationStrategy
     
     public Route OptimizeRoute(List<Point> points)
     {
+        ValidateInput(points);
+        
+        var stopwatch = StartPerformanceTimer();
+        var (startPoint, remainingPoints) = SeparateStartPoint(points);
+        var possibleRoutes = GenerateAllPossibleRoutes(startPoint, remainingPoints, stopwatch);
+        var optimalRoute = FindOptimalRoute(possibleRoutes);
+        
+        MarkOptimalConnections(optimalRoute);
+        return optimalRoute;
+    }
+
+    private static void ValidateInput(List<Point> points)
+    {
         if (points.Count <= 1)
             throw new ArgumentException("Need at least 2 points for route optimization");
+    }
 
-        Stopwatch stopwatch = new();
+    private static Stopwatch StartPerformanceTimer()
+    {
+        var stopwatch = new Stopwatch();
         stopwatch.Start();
-        var startPoint = points[0];  // Keep track of start point
-        var pointsToPermute = points.Skip(1).ToList();  // Permute all except start
+        return stopwatch;
+    }
+
+    private static (Point startPoint, List<Point> remainingPoints) SeparateStartPoint(List<Point> points)
+    {
+        var startPoint = points[0];
+        var remainingPoints = points.Skip(1).ToList();
+        return (startPoint, remainingPoints);
+    }
+
+    private static List<Route> GenerateAllPossibleRoutes(Point startPoint, List<Point> remainingPoints, Stopwatch stopwatch)
+    {
+        var possibleRoutes = new List<Route>();
         
-        List<Route> possibleRoutes = new();
-        foreach (var permutation in GeneratePermutations(pointsToPermute))
+        foreach (var permutation in GeneratePermutations(remainingPoints))
         {
-            // Add start point to beginning and end to complete the circuit
-            var fullRoute = new List<Point> { startPoint };
-            fullRoute.AddRange(permutation);
-            fullRoute.Add(startPoint);
-            
-            // Create route and calculate its total distance
-            var route = new Route(fullRoute, OptimizationAlgorithm.BruteForce)
-            {
-                Connections = CreateConnections(fullRoute),
-                TotalDistance = CalculateTotalDistance(fullRoute),
-                CalculationTime = stopwatch.ElapsedMilliseconds.ToString()
-            };
-            
+            var completeRoute = CreateCompleteRoute(startPoint, permutation);
+            var route = CreateRouteWithMetrics(completeRoute, stopwatch);
             possibleRoutes.Add(route);
         }
 
-        // Find the route with minimum total distance
-        var optimalRoute = possibleRoutes.MinBy(r => r.TotalDistance) 
+        return possibleRoutes;
+    }
+
+    private static List<Point> CreateCompleteRoute(Point startPoint, List<Point> permutation)
+    {
+        var completeRoute = new List<Point> { startPoint };
+        completeRoute.AddRange(permutation);
+        completeRoute.Add(startPoint); // Complete the circuit
+        return completeRoute;
+    }
+
+    private static Route CreateRouteWithMetrics(List<Point> points, Stopwatch stopwatch)
+    {
+        return new Route(points, OptimizationAlgorithm.BruteForce)
+        {
+            Connections = CreateConnections(points),
+            TotalDistance = CalculateTotalDistance(points),
+            CalculationTime = stopwatch.ElapsedMilliseconds.ToString()
+        };
+    }
+
+    private static Route FindOptimalRoute(List<Route> possibleRoutes)
+    {
+        return possibleRoutes.MinBy(r => r.TotalDistance) 
             ?? throw new InvalidOperationException("Failed to find optimal route");
-            
-        // Mark connections as optimal
+    }
+
+    private static void MarkOptimalConnections(Route optimalRoute)
+    {
         foreach (var connection in optimalRoute.Connections)
         {
             connection.IsOptimal = true;
         }
-
-        return optimalRoute;
     }
 
     private static List<Connection> CreateConnections(List<Point> points)
     {
-        var connections = new List<Connection>();
-        for (int i = 0; i < points.Count - 1; i++)
-        {
-            connections.Add(new Connection
+        return Enumerable.Range(0, points.Count - 1)
+            .Select(i => new Connection
             {
                 FromPoint = points[i],
                 ToPoint = points[i + 1],
                 Distance = CalculateDistance(points[i], points[i + 1])
-            });
-        }
-        return connections;
+            })
+            .ToList();
     }
 
     private static double CalculateTotalDistance(List<Point> points)
     {
-        double totalDistance = 0;
-        for (int i = 0; i < points.Count - 1; i++)
-        {
-            totalDistance += CalculateDistance(points[i], points[i + 1]);
-        }
-        return totalDistance;
+        return Enumerable.Range(0, points.Count - 1)
+            .Sum(i => CalculateDistance(points[i], points[i + 1]));
     }
 
     private static double CalculateDistance(Point p1, Point p2)
