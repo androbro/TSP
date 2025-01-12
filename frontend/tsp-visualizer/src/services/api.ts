@@ -24,7 +24,7 @@ export interface RouteDto {
 
 // Create axios instance with default config
 const api = axios.create({
-    baseURL: 'http://localhost:5298/api', // Adjust this to match your .NET API port
+    baseURL: 'https://localhost:44374/api', // Adjust this to match your .NET API port
     headers: {
         'Content-Type': 'application/json',
     },

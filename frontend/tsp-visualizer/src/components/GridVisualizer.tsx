@@ -12,6 +12,7 @@ const GridVisualizer = () => {
     const [points, setPoints] = useState<PointDto[]>([]);
     const [gridSize, setGridSize] = useState(1000);
     const [numPoints, setNumPoints] = useState(12);
+    const [algorithm, setAlgorithm] = useState(1);
     const [loading, setLoading] = useState(false);
 
     const { route, error, loading: routeLoading, calculateRoute } = useRouteCalculation();
@@ -38,15 +39,17 @@ const GridVisualizer = () => {
             <GridControls
                 gridSize={gridSize}
                 numPoints={numPoints}
+                algorithm={algorithm}
                 onGridSizeChange={setGridSize}
                 onNumPointsChange={setNumPoints}
+                onAlgorithmChange={setAlgorithm}
                 onGeneratePoints={generatePoints}
                 loading={loading}
             />
 
             <div className="p-4">
                 <button
-                    onClick={() => calculateRoute(points)}
+                    onClick={() => calculateRoute(points, algorithm)}
                     disabled={routeLoading || points.length === 0}
                     className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:opacity-50"
                 >

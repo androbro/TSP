@@ -6,7 +6,7 @@ export const useRouteCalculation = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const calculateRoute = async (points: PointDto[]) => {
+    const calculateRoute = async (points: PointDto[], algorithm: number) => {
         try {
             setLoading(true);
             setError(null);
@@ -17,7 +17,7 @@ export const useRouteCalculation = () => {
             }));
             const result = await routeService.calculateRoute({
                 points: pointDtoList,
-                algorithm: 0
+                algorithm: algorithm
             });
             setRoute(result);
         } catch (err) {
