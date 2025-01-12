@@ -40,6 +40,7 @@ builder.Services.AddCors(options =>
         {
             builder
                 .WithOrigins(
+                    "http://localhost:5173/",     // Vite default
                     "http://localhost:5173",     // Vite default
                     "https://localhost:5173",    // Vite HTTPS
                     "http://localhost:44374",    // backend port
