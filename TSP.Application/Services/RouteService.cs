@@ -6,42 +6,44 @@ using TSP.Domain.Entities;
 namespace TSP.Application.Services;
 
 public class RouteService : IRouteService
-{  
+{
     private readonly IRouteStrategyFactory _strategyFactory;
 
     public RouteService(IRouteStrategyFactory strategyFactory)
     {
         _strategyFactory = strategyFactory;
     }
-    
-    public async Task<RouteDto> CalculateRouteAsync(IEnumerable<PointDto> points, OptimizationAlgorithmDto algorithm)
+
+    public async Task<RouteDto> CalculateRouteAsync(IEnumerable<PointDto> points, OptimizationAlgorithmDto algorithmDto,
+        CancellationToken cancellationToken)
     {
-        // mss beter timeonly? 
-        // maar er zijn ook timers in c# die je kan gebruiken die .elapsed hebben. stopwatch
         var startTime = DateTime.Now;
-        
+
         // Get the right strategy based on the algorithm
-        var strategy = _strategyFactory.GetStrategy(algorithm);
-        
+        var strategy = _strategyFactory.GetStrategy(algorithmDto);
+
         var routePoints = points.Select(p => new Point(p.X, p.Y)).ToList();
-        var optimizedRoute = strategy.OptimizeRoute(routePoints);
         
+        // fix cancellation token
+        var optimizedRoute = await Task.Run(() => strategy.OptimizeRoute(routePoints), cancellationToken);
+
         var calculationTime = (DateTime.Now - startTime).TotalSeconds;
 
         // Map back to DTO
         return new RouteDto
         {
-            Points = optimizedRoute.Points.Select(p => new PointDto { X = p.X, Y = p.Y, Id = p.Id}).ToList(),
+            Points = optimizedRoute.Points.Select(p => new PointDto { X = p.X, Y = p.Y, Id = p.Id }).ToList(),
             TotalDistance = optimizedRoute.TotalDistance,
             CalculationTime = $"{calculationTime} ms",
             Connections = optimizedRoute.Connections
-                .Select(c => new ConnectionDto { 
-                    IsOptimal = c.IsOptimal, 
-                    Distance = c.Distance, 
-                    FromPoint = c.FromPoint, 
+                .Select(c => new ConnectionDto
+                {
+                    IsOptimal = c.IsOptimal,
+                    Distance = c.Distance,
+                    FromPoint = c.FromPoint,
                     ToPoint = c.ToPoint
                 })
-                .ToList() 
+                .ToList()
         };
     }
 

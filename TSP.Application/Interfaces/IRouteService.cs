@@ -4,5 +4,5 @@ namespace TSP.Application.Interfaces;
 
 public interface IRouteService
 {
-    Task<RouteDto> CalculateRouteAsync(IEnumerable<PointDto> points, OptimizationAlgorithmDto algorithmDto);
+    Task<RouteDto> CalculateRouteAsync(IEnumerable<PointDto> points, OptimizationAlgorithmDto algorithmDto, CancellationToken cancellationToken);
 }
