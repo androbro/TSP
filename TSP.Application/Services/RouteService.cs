@@ -14,63 +14,58 @@ public class RouteService : IRouteService
         _strategyFactory = strategyFactory;
     }
 
-  public async Task<RouteDto> CalculateRouteAsync(
-    IEnumerable<PointDto> points,             // Input points to calculate route
-    OptimizationAlgorithmDto algorithmDto,    // Which algorithm to use
-    CancellationToken cancellationToken)      // For cancelling the operation
-{
-    // 1. Create a linked cancellation token that includes our own timeout
-    using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-    cts.CancelAfter(TimeSpan.FromMinutes(5)); // Auto-cancel after 5 minutes
-
-    var startTime = DateTime.Now;  // Track when we started
-    IRouteOptimizationStrategy strategy = null;  // Will hold our algorithm strategy
-
-    try
+    public async Task<RouteDto> CalculateRouteAsync(IEnumerable<PointDto> points, OptimizationAlgorithmDto algorithmDto, CancellationToken cancellationToken)
     {
-        // 2. Get the appropriate algorithm strategy (like BruteForce, NearestNeighbor, etc.)
-        strategy = _strategyFactory.GetStrategy(algorithmDto);
-        
-        // 3. Convert input DTOs to domain Points
-        var routePoints = points.Select(p => new Point(p.X, p.Y)).ToList();
+        using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        cts.CancelAfter(TimeSpan.FromMinutes(5));
 
-        // 4. Set up cancellation registration
-        using var registration = cancellationToken.Register(() => 
-        {
-            // When the original token is cancelled, also cancel our timeout token
-            cts.Cancel();
-        });
+        var startTime = DateTime.Now;
+        IRouteOptimizationStrategy strategy = null;
 
-        // 5. Run the heavy computation on a background thread
-        var result = await Task.Run(() =>
+        try
         {
-            // Do the actual route optimization
-            var optimizedRoute = strategy.OptimizeRoute(routePoints, cts.Token);
+            var tcs = new TaskCompletionSource<Route>();
+            using var registration = cts.Token.Register(() => tcs.TrySetCanceled());
+
+            strategy = _strategyFactory.GetStrategy(algorithmDto);
+            var routePoints = points.Select(p => new Point(p.X, p.Y)).ToList();
+
+            var computationTask = Task.Run(() =>
+            {
+                var optimizedRoute = strategy.OptimizeRoute(routePoints, cts.Token);
+                cts.Token.ThrowIfCancellationRequested();
+                return optimizedRoute;
+            }, cts.Token);
+
+            var completedTask = await Task.WhenAny(computationTask, tcs.Task);
             
-            // Check if we were cancelled after computation
-            cts.Token.ThrowIfCancellationRequested();
-            
-            return optimizedRoute;
-        }, cts.Token);  // Can be cancelled before starting the Task
+            if (completedTask.IsCanceled || cts.Token.IsCancellationRequested)
+            {
+                throw new OperationCanceledException();
+            }
 
-        // 6. Calculate how long it took
-        var calculationTime = (DateTime.Now - startTime).TotalMilliseconds;
-
-        // 7. Convert the result back to a DTO
-        return MapToRouteDto(result, calculationTime);
-    }
-    finally
-    {
-        // 8. Cleanup
-        // If our strategy implements IDisposable, dispose it
-        if (strategy is IDisposable disposable)
-        {
-            disposable.Dispose();
+            var optimizedRoute = await computationTask;
+            var calculationTime = (DateTime.Now - startTime).TotalMilliseconds;
+            return MapToRouteDto(optimizedRoute, calculationTime);
         }
-        // Try to free up memory
-        GC.Collect();
+        catch (OperationCanceledException)
+        {
+            if (strategy is IDisposable disposable)
+            {
+                disposable.Dispose();
+            }
+            GC.Collect();
+            throw;
+        }
+        finally
+        {
+            if (strategy is IDisposable disposable)
+            {
+                disposable.Dispose();
+            }
+            GC.Collect();
+        }
     }
-}
 
     private static RouteDto MapToRouteDto(Route optimizedRoute, double calculationTime)
     {
@@ -93,12 +88,6 @@ public class RouteService : IRouteService
 
     private async Task<List<Point>> OptimizeRoute(List<Point> points)
     {
-        // 1. BRUTE FORCE
-        // 2. NEAREST NEIGHBOR
-        // 3. 2-OPT
-        // 4. SIMULATED ANNEALING
-        // 5. GENETIC ALGORITHM
-        // 6. LIN-KERNIGHAN
         throw new NotImplementedException();
     }
 }

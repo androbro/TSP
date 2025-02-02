@@ -20,7 +20,25 @@ public class RouteController: Controller
     [HttpPost("calculate")]
     public async Task<ActionResult<RouteDto>> CalculateRoute([FromBody] CreateRouteCommand createRouteCommand, CancellationToken cancellationToken)
     {
-        var route = await _mediator.Send(createRouteCommand, cancellationToken);
-        return Ok(route);
+        try 
+        {
+            //seems swagger doesnt trigger the cancellation token
+            Console.WriteLine("Starting calculation..."); // Debug log
+        
+            cancellationToken.Register(() => 
+            {
+                Console.WriteLine("Cancellation was triggered at controller level"); // Debug log
+            });
+        
+            var route = await _mediator.Send(createRouteCommand, cancellationToken);
+            return Ok(route);
+        }
+        catch (OperationCanceledException)
+        {
+            Console.WriteLine("Caught cancellation in controller"); // Debug log
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+            return StatusCode(499, "Client Closed Request");
+        }
     }
 }
