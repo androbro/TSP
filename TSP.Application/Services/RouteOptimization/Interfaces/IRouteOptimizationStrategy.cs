@@ -5,7 +5,7 @@ namespace TSP.Application.Services.RouteOptimization.Interfaces;
 
 public interface IRouteOptimizationStrategy
 {
-    Route OptimizeRoute(List<Point> points);
+    Route OptimizeRoute(List<Point> points, CancellationToken cancellationToken);
     string algorithmName { get; }
     Route? route { get; set; }
 }

@@ -1,4 +1,5 @@
 using TSP.Application.Interfaces;
+using TSP.Application.Middleware;
 using TSP.Application.Services;
 using TSP.Application.Services.RouteOptimization.Common;
 using TSP.Application.Services.RouteOptimization.Interfaces;
@@ -55,6 +56,7 @@ builder.Services.AddCors(options =>
 var app = builder.Build();
 
 app.UseStaticFiles();
+app.UseMiddleware<RequestCleanupMiddleware>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

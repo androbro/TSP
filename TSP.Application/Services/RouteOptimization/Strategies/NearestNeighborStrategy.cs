@@ -10,7 +10,7 @@ public class NearestNeighborStrategy : IRouteOptimizationStrategy
    public string algorithmName => OptimizationAlgorithm.BruteForce.ToString();
     public Route? route { get; set; }
 
-    public Route OptimizeRoute(List<Point> points)
+    public Route OptimizeRoute(List<Point> points, CancellationToken cancellationToken)
     {
         // var shortestRoute = FindShortestRoute(points);
         //

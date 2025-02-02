@@ -9,18 +9,37 @@ public class BruteForceStrategy : IRouteOptimizationStrategy
 {
     public string algorithmName { get; } = "Brute Force";
     public Route? route { get; set; }
+    private List<Route> _possibleRoutes;
     
-    public Route OptimizeRoute(List<Point> points)
+    public Route OptimizeRoute(List<Point> points, CancellationToken cancellationToken)
     {
-        ValidateInput(points);
+        try 
+        {
+            _possibleRoutes = new List<Route>();
+            
+            ValidateInput(points);
+            
+            var stopwatch = StartPerformanceTimer();
+            var (startPoint, remainingPoints) = SeparateStartPoint(points);
+            var possibleRoutes = GenerateAllPossibleRoutes(startPoint, remainingPoints, stopwatch, cancellationToken);
+            var optimalRoute = FindOptimalRoute(possibleRoutes);
         
-        var stopwatch = StartPerformanceTimer();
-        var (startPoint, remainingPoints) = SeparateStartPoint(points);
-        var possibleRoutes = GenerateAllPossibleRoutes(startPoint, remainingPoints, stopwatch);
-        var optimalRoute = FindOptimalRoute(possibleRoutes);
-        
-        MarkOptimalConnections(optimalRoute);
-        return optimalRoute;
+            MarkOptimalConnections(optimalRoute);
+            return optimalRoute;
+        }
+        finally
+        {
+            // Clear references to allow GC
+            _possibleRoutes?.Clear();
+            _possibleRoutes = null;
+            GC.Collect(); // Force garbage collection
+        }
+    }
+    
+    public void Dispose()
+    {
+        _possibleRoutes?.Clear();
+        _possibleRoutes = null;
     }
 
     private static void ValidateInput(List<Point> points)
@@ -43,12 +62,15 @@ public class BruteForceStrategy : IRouteOptimizationStrategy
         return (startPoint, remainingPoints);
     }
 
-    private static List<Route> GenerateAllPossibleRoutes(Point startPoint, List<Point> remainingPoints, Stopwatch stopwatch)
+    private static List<Route> GenerateAllPossibleRoutes(Point startPoint, List<Point> remainingPoints, Stopwatch stopwatch, CancellationToken cancellationToken)
     {
         var possibleRoutes = new List<Route>();
+        cancellationToken.ThrowIfCancellationRequested();
         
-        foreach (var permutation in GeneratePermutations(remainingPoints))
+        foreach (var permutation in GeneratePermutations(remainingPoints, cancellationToken))
         {
+            cancellationToken.ThrowIfCancellationRequested();
+            
             var completeRoute = CreateCompleteRoute(startPoint, permutation);
             var route = CreateRouteWithMetrics(completeRoute, stopwatch);
             possibleRoutes.Add(route);
@@ -114,7 +136,7 @@ public class BruteForceStrategy : IRouteOptimizationStrategy
         return Math.Sqrt(dx * dx + dy * dy);
     }
 
-    private static IEnumerable<List<T>> GeneratePermutations<T>(List<T> items)
+    private static IEnumerable<List<T>> GeneratePermutations<T>(List<T> items, CancellationToken cancellationToken)
     {
         if (items.Count <= 1)
         {
@@ -124,10 +146,12 @@ public class BruteForceStrategy : IRouteOptimizationStrategy
 
         for (int i = 0; i < items.Count; i++)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+            
             var current = items[i];
             var remainingItems = items.Take(i).Concat(items.Skip(i + 1)).ToList();
 
-            foreach (var permutation in GeneratePermutations(remainingItems))
+            foreach (var permutation in GeneratePermutations(remainingItems, cancellationToken))
             {
                 permutation.Insert(0, current);
                 yield return permutation;

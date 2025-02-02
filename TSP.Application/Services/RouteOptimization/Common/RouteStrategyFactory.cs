@@ -14,7 +14,7 @@ public class RouteStrategyFactory : IRouteStrategyFactory
         _serviceProvider = serviceProvider;
     }
 
-    public IRouteOptimizationStrategy GetStrategy(OptimizationAlgorithmDto algorithm)
+    public IRouteOptimizationStrategy? GetStrategy(OptimizationAlgorithmDto algorithm)
     {
         return algorithm switch
         {

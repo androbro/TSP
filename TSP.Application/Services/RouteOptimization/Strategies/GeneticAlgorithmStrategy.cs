@@ -9,7 +9,7 @@ public class GeneticAlgorithmStrategy: IRouteOptimizationStrategy
     public string algorithmName => OptimizationAlgorithm.GeneticAlgorithm.ToString();
     public Route? route { get; set; }
     
-    public Route OptimizeRoute(List<Point> points)
+    public Route OptimizeRoute(List<Point> points, CancellationToken cancellationToken)
     {
         // Implementation here
         throw new NotImplementedException();

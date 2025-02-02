@@ -4,5 +4,5 @@ namespace TSP.Application.Services.RouteOptimization.Interfaces;
 
 public interface IRouteStrategyFactory
 {
-    IRouteOptimizationStrategy GetStrategy(OptimizationAlgorithmDto algorithm);
+    IRouteOptimizationStrategy? GetStrategy(OptimizationAlgorithmDto algorithm);
 }
